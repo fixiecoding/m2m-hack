@@ -11,10 +11,14 @@
 #define GPRS_LOGIN     ""    // replace with your GPRS login
 #define GPRS_PASSWORD  "" // replace with your GPRS password
 
+// The amount the pressure sensor has to go down by before it is sent to xively
+#define PRESSURE_SENSOR_THRESHOLD 100
+
+
 // Your Xively key to let you upload data
 char xivelyKey[] = "m4FrAG9u09PaF45HV7gurw0BTpxvFGIRtaqHVe0IcSVsxAcf";
 
-// Analog pin which we're monitoring 
+// Analog pin which we're monitoring
 int sensorPin = A0;
 
 // Define the strings for our datastream IDs
@@ -37,7 +41,7 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for Leonardo only
   }
-  
+
   Serial.println("Starting single datastream upload to Xively...");
   Serial.println();
 
@@ -65,11 +69,12 @@ void loop() {
   Serial.print("Read sensor value ");
   Serial.println(datastreams[0].getFloat());
 
-  Serial.println("Uploading it to Xively");
-  int ret = xivelyclient.put(feed, xivelyKey);
-  Serial.print("xivelyclient.put returned ");
-  Serial.println(ret);
+  if (sensorValue < PRESSURE_SENSOR_THRESHOLD) {
+    Serial.println("Uploading it to Xively");
+    int ret = xivelyclient.put(feed, xivelyKey);
+    Serial.print("xivelyclient.put returned ");
+    Serial.println(ret);
+  }
 
-  Serial.println();
-  delay(15000);
+  delay(500);
 }
