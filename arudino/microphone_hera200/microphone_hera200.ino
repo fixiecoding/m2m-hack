@@ -39,8 +39,6 @@ const int pinLED0 = 5; //10; //digital output connected to LED 10
 const int valBaseline = 350;
 
 void setup() {
-    Serial.begin(115200);
-
     pinMode(pinLED0, OUTPUT);
     
     // put your setup code here, to run once:
