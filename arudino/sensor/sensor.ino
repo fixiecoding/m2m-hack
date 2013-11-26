@@ -12,7 +12,7 @@
 #define GPRS_PASSWORD  "" // replace with your GPRS password
 
 // The amount the pressure sensor has to go down by before it is sent to xively
-#define PRESSURE_SENSOR_THRESHOLD 100
+#define PRESSURE_SENSOR_THRESHOLD 200
 
 
 // Your Xively key to let you upload data
@@ -69,6 +69,7 @@ void loop() {
   Serial.print("Read sensor value ");
   Serial.println(datastreams[0].getFloat());
 
+  // Only upload when pressed
   if (sensorValue < PRESSURE_SENSOR_THRESHOLD) {
     Serial.println("Uploading it to Xively");
     int ret = xivelyclient.put(feed, xivelyKey);
