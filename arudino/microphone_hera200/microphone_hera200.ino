@@ -69,10 +69,12 @@ void setup() {
 
 void loop() {
     int valMic = analogRead(pinMic);
+    datastreams[0].setFloat(valMic);
+
+    Serial.println(datastreams[0].getFloat());
 
     if (valMic > valBaseline + 15) {
       digitalWrite(pinLED0, HIGH);
-      Serial.println(valMic);
       
       Serial.println("Uploading it to Xively");
       int ret = xivelyclient.put(feed, xivelyKey);
