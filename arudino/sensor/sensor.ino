@@ -7,18 +7,20 @@
 #define PINNUMBER ""
 
 // Your phone APN data
-#define GPRS_APN       "eseye.com"  // replace your GPRS APN
-#define GPRS_LOGIN     "login"     // replace with your GPRS login
-#define GPRS_PASSWORD  "password"  // replace with your GPRS password
+#define GPRS_APN       "eseye.com" // replace your GPRS APN
+#define GPRS_LOGIN     ""    // replace with your GPRS login
+#define GPRS_PASSWORD  "" // replace with your GPRS password
 
 // Your Xively key to let you upload data
 char xivelyKey[] = "m4FrAG9u09PaF45HV7gurw0BTpxvFGIRtaqHVe0IcSVsxAcf";
 
-// Define the string for the datastream ID you want to retrieve
-char temperatureId[] = "infrared";
+// Analog pin which we're monitoring 
+int sensorPin = A0;
 
+// Define the strings for our datastream IDs
+char sensorId[] = "pressure";
 XivelyDatastream datastreams[] = {
-  XivelyDatastream(temperatureId, strlen(temperatureId), DATASTREAM_FLOAT),
+  XivelyDatastream(sensorId, strlen(sensorId), DATASTREAM_FLOAT),
 };
 // Finally, wrap the datastreams into a feed
 XivelyFeed feed(1067059460, datastreams, 1 /* number of datastreams */);
@@ -36,7 +38,7 @@ void setup() {
     ; // wait for serial port to connect. Needed for Leonardo only
   }
   
-  Serial.println("Reading from Xively example");
+  Serial.println("Starting single datastream upload to Xively...");
   Serial.println();
 
   // connection state
@@ -57,20 +59,17 @@ void setup() {
 }
 
 void loop() {
-  int ret = xivelyclient.get(feed, xivelyKey);
-  Serial.print("xivelyclient.get returned ");
+  int sensorValue = analogRead(sensorPin);
+  datastreams[0].setFloat(sensorValue);
+
+  Serial.print("Read sensor value ");
+  Serial.println(datastreams[0].getFloat());
+
+  Serial.println("Uploading it to Xively");
+  int ret = xivelyclient.put(feed, xivelyKey);
+  Serial.print("xivelyclient.put returned ");
   Serial.println(ret);
 
-  if (ret > 0)
-  {
-    Serial.println("Datastream is...");
-    Serial.println(feed[0]);
-
-    Serial.print("Temperature is: ");
-    Serial.println(feed[0].getFloat());
-  }
-
   Serial.println();
-  delay(15000UL);
+  delay(15000);
 }
-
