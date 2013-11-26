@@ -17,7 +17,7 @@
 char xivelyKey[] = "m4FrAG9u09PaF45HV7gurw0BTpxvFGIRtaqHVe0IcSVsxAcf";
 
 // Define the string for the datastream ID you want to retrieve
-char temperatureId[] = "infrared";
+char temperatureId[] = "humidity";
 
 XivelyDatastream datastreams[] = {
   XivelyDatastream(temperatureId, strlen(temperatureId), DATASTREAM_FLOAT),
@@ -37,7 +37,7 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for Leonardo only
   }
-  
+
   Serial.println("Reading from Xively example");
   Serial.println();
 
@@ -56,7 +56,7 @@ void setup() {
       delay(1000);
     }
   }
-  
+
   Serial.println("DHT Test Program");
   Serial.print("LIBRARY VERSION: ");
   Serial.println(DHT_LIB_VERSION);
@@ -79,24 +79,24 @@ void loop() {
   }
 
   Serial.println();
-  
-  
+
+
   // READ DATA
   Serial.print("DHT22, \t");
   int chk = DHT.read22(DHT22_PIN);
   switch (chk)
    {
-        case DHTLIB_OK: 
-            Serial.print("OK,\t"); 
+        case DHTLIB_OK:
+            Serial.print("OK,\t");
             break;
-        case DHTLIB_ERROR_CHECKSUM: 
-            Serial.print("Checksum error,\t"); 
+        case DHTLIB_ERROR_CHECKSUM:
+            Serial.print("Checksum error,\t");
             break;
-        case DHTLIB_ERROR_TIMEOUT: 
-            Serial.print("Time out error,\t"); 
+        case DHTLIB_ERROR_TIMEOUT:
+            Serial.print("Time out error,\t");
             break;
-        default: 
-            Serial.print("Unknown error,\t"); 
+        default:
+            Serial.print("Unknown error,\t");
             break;
     }
     // DISPLAY DATA
