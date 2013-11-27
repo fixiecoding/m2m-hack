@@ -1,0 +1,112 @@
+<html>
+<head>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>  
+<script src="http://d23cj0cdvyoxg0.cloudfront.net/xivelyjs-1.0.4.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+<script src="./css/bootstrap.min.css"></script>  
+
+
+   <script>
+        function createChart(varA, chartNum,cName)
+        {
+
+            //Get the context of the canvas element we want to select
+            var ctx = document.getElementById(chartNum).getContext("2d");
+ 
+            //Create the data object to pass to the chart
+            var data = {
+                labels : [cName],
+                datasets : [
+                            {
+                                fillColor : "rgba(0,191,255,1)",
+                                strokeColor : "rgba(220,220,220,1)",
+                                data : [varA,0]
+                            }
+                           ]
+                      };
+
+            //The options we are going to pass to the chart
+            options = {
+                barDatasetSpacing : 2,
+                barValueSpacing: 5
+            };
+ 
+            //Create the chart
+            new Chart(ctx).Bar(data, options);
+        }
+        </script>
+
+<script>
+var feedID        = 1067059460,          // Feed ID  
+      datastreamID  = "pressure";       // Datastream ID  
+      selector      = "#myelement";   // Your element on the page  
+
+
+
+//Creating a function that will return the current value of the datastream based on the datastreamID
+function getVal(dID,chartNum,cName) {
+xively.setKey("m4FrAG9u09PaF45HV7gurw0BTpxvFGIRtaqHVe0IcSVsxAcf");
+xively.datastream.get (feedID, dID, function ( datastream ) {  
+cV = new Array();
+cV[0] = datastream["current_value"];
+currentval0 = parseInt(cV[0],10);
+
+
+createChart(currentval0,chartNum,cName);
+//Update the HTML of the specified field with the current value for debugging purposes
+$(selector).html( datastream["current_value"] );
+	});
+
+
+}
+
+
+
+
+
+
+// Make sure the document is ready to be handled  
+setInterval(function() {
+	$(document).ready(function($) { getVal('pressure','myChart1','Temperature Chart'); })}
+	, 3000);
+
+setInterval(function() {
+	$(document).ready(function($) { getVal('infrared','myChart2','Bee count Chart'); })}
+	, 3000);
+
+setInterval(function() {
+	$(document).ready(function($) { getVal('microphone','myChart3','Sound Chart'); })}
+	, 3000);
+
+</script>
+
+    <script>
+var map;
+function initialize() {
+  var mapOptions = {
+    zoom: 10,
+    center: new google.maps.LatLng(-34.397, 150.644)
+  };
+  map = new google.maps.Map(document.getElementById('map-canvas'),
+      mapOptions);
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+    </head>
+<body>
+        <canvas id="myChart1" width="300" height="100"></canvas>
+        <canvas id="myChart2" width="300" height="100"></canvas>
+        <canvas id="myChart3" width="300" height="100"></canvas>
+            <div id="map-canvas"></div>
+
+
+<div id="myelement">Debug: Value</div>
+<br>
+</div>
+</body>
+</html>
