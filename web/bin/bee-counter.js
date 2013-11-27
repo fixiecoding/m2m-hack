@@ -89,10 +89,17 @@ board.on("ready", function() {
   // Create a new `ping` hardware instance.
   var ping = new five.Ping(SONAR_PIN);
 
+  // Boolean to check if it is currently decrementing,
+  // so that there are not duplicate calls to the api
+  var sonarIsDecrementing = false;
+
   ping.on("change", function(err, value) {
     if (this.cm < SONAR_NO_DETECTION_THRESHOLD &&
-        this.cm > SONAR_NO_DETECTION_MIN) {
+        this.cm > SONAR_NO_DETECTION_MIN &&
+        !sonarIsDecrementing) {
       console.log("DETECTED: in", value, this.cm + "cm away");
+      sonarIsDecrementing = true;
+
       needle.get(xivelyGetDataUrl, options, function(err, resp, body){
         var currentVal = body["current_value"] || 0;
         console.log("sonar get", body);
@@ -114,6 +121,7 @@ board.on("ready", function() {
 
           needle.put(xivelyAddDataUrl, data, options, function(err, resp, body) {
             console.log("put:", data, resp.output);
+            sonarIsDecrementing = false;
           });
         }
       });
