@@ -1,9 +1,9 @@
 "use strict";
 
 var API_BASE = "https://api.xively.com/";
-var API_KEY = "m4FrAG9u09PaF45HV7gurw0BTpxvFGIRtaqHVe0IcSVsxAcf";
-var FEED_ID = "1067059460";
-var DATASTREAM_ID = "sonar";
+var API_KEY = "wtGfQ1fsCxwawA3MQz8KNwzPseNAjzJCOyYC941MShUzq5ML";
+var FEED_ID = "614944872";
+var DATASTREAM_ID = "counter";
 
 var IR_DETECTION_THRESHOLD = 150;
 
@@ -55,7 +55,9 @@ board.on("ready", function() {
         console.log("DETECTED: out");
         irIsDecrementing = true;
         needle.get(xivelyGetDataUrl, options, function(err, resp, body){
-          var currentVal = body["current_value"];
+          var currentVal = body["current_value"] || 0;
+          console.log("ir get", body);
+
           if (currentVal) {
             var currentValNum = parseInt(currentVal, 10);
 
@@ -92,7 +94,8 @@ board.on("ready", function() {
         this.cm > SONAR_NO_DETECTION_MIN) {
       console.log("DETECTED: in", value, this.cm + "cm away");
       needle.get(xivelyGetDataUrl, options, function(err, resp, body){
-        var currentVal = body["current_value"];
+        var currentVal = body["current_value"] || 0;
+        console.log("sonar get", body);
         if (currentVal) {
           var currentValNum = parseInt(currentVal, 10);
           var newVal = currentValNum + 1;
