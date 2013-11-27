@@ -7,6 +7,11 @@ var DATASTREAM_ID = "sonar";
 
 var IR_DETECTION_THRESHOLD = 150;
 
+// How far in cm it is for when there is no detection
+var SONAR_NO_DETECTION_THRESHOLD = 7.5;
+// Min value for sonar detection
+var SONAR_NO_DETECTION_MIN = 1;
+
 var IR_TRANSMITTER_PIN = 11;
 var SONAR_PIN = 7;
 
@@ -29,9 +34,6 @@ var options = {
 // Johnny five
 var board = new five.Board();
 
-// How far in cm it is for when there is no detection
-var NO_DETECTION_THRESHOLD = 7.5;
-
 board.on("ready", function() {
 
   // IR LED
@@ -43,15 +45,15 @@ board.on("ready", function() {
 
   // Boolean to check if it is currently decrementing,
   // so that there are not duplicate calls to the api
-  var isDecrementing = false;
+  var irIsDecrementing = false;
 
   irReceiver.on("read", function(value) {
     console.log("ir value:", value);
 
-    if (!isDecrementing) {
+    if (!irIsDecrementing) {
       if (value < IR_DETECTION_THRESHOLD) {
         console.log("DETECTED: out");
-        isDecrementing = true;
+        irIsDecrementing = true;
         needle.get(xivelyGetDataUrl, options, function(err, resp, body){
           var currentVal = body["current_value"];
           if (currentVal) {
@@ -74,7 +76,7 @@ board.on("ready", function() {
 
             needle.put(xivelyAddDataUrl, data, options, function(err, resp, body) {
               console.log("put:", data, resp.output);
-              isDecrementing = false;
+              irIsDecrementing = false;
             });
           }
         });
@@ -83,33 +85,35 @@ board.on("ready", function() {
   });
 
   // Create a new `ping` hardware instance.
-  // var ping = new five.Ping(SONAR_PIN);
+  var ping = new five.Ping(SONAR_PIN);
 
-  // ping.on("change", function(err, value) {
-  //   console.log(value, this.cm + "cm away");
+  ping.on("change", function(err, value) {
+    if (this.cm < SONAR_NO_DETECTION_THRESHOLD &&
+        this.cm > SONAR_NO_DETECTION_MIN) {
+      console.log(value, this.cm + "cm away");
+      needle.get(xivelyGetDataUrl, options, function(err, resp, body){
+        var currentVal = body["current_value"];
+        if (currentVal) {
+          var currentValNum = parseInt(currentVal, 10);
+          var newVal = currentValNum + 1;
 
-  //   if (this.cm < NO_DETECTION_THRESHOLD) {
-  //     needle.get(xivelyGetDataUrl, options, function(err, resp, body){
-  //       var currentVal = body["current_value"];
-  //       var currentValNum = parseInt(currentVal, 10);
-  //       var newVal = currentValNum + 1;
+          var data = {
+            "version":"1.0.0",
+            "datastreams" : [
+              {
+                "id" : DATASTREAM_ID,
+                "current_value": newVal
+              }
+            ]
+          };
 
-  //       var data = {
-  //         "version":"1.0.0",
-  //         "datastreams" : [
-  //           {
-  //             "id" : DATASTREAM_ID,
-  //             "current_value": newVal
-  //           }
-  //         ]
-  //       };
+          console.log(currentVal, '->', newVal);
 
-  //       console.log(currentVal, '->', newVal);
-
-  //       needle.put(xivelyAddDataUrl, data, options, function(err, resp, body) {
-  //         console.log("put:", data, resp.output);
-  //       });
-  //     });
-  //   }
-  // });
+          needle.put(xivelyAddDataUrl, data, options, function(err, resp, body) {
+            console.log("put:", data, resp.output);
+          });
+        }
+      });
+    }
+  });
 });
