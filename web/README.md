@@ -40,6 +40,15 @@ To enable the hardware features
 
         node bin/hardware-server.js
 
+### Demo files
+
+Files for testing functionality.
+
+Microphone
+
+    node bin/microphone.js
+
+
 ## Testing
 
 Uses [karma](http://karma-runner.github.io/) and [jasmine](http://pivotal.github.io/jasmine/).
