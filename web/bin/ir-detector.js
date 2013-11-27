@@ -3,10 +3,10 @@
 "use strict";
 
 // Ambient ifrared values
-var AMBIENT_IR = 20;
-var IR_DETECTION_THRESHOLD = 100;
+var IR_DETECTION_THRESHOLD = 150;
 
 var five = require("johnny-five");
+var Sensor = require("./lib/Sensor");
 
 var board = new five.Board();
 
@@ -19,10 +19,7 @@ board.on("ready", function() {
   led.on();
 
   // Create a new IR receiver hardware instance.
-  var irReceiver = new five.Sensor({
-    pin: "A1",
-    freq: 250
-  });
+  var irReceiver = new Sensor("A1", board);
 
   // Inject the `sensor` hardware into
   // the Repl instance's context;
@@ -32,10 +29,10 @@ board.on("ready", function() {
   });
 
   // "data" get the current reading from the irReceiver
-  irReceiver.on("data", function() {
-    console.log("ir value:", this.value);
+  irReceiver.on("read", function(value) {
+    console.log("ir value:", value);
 
-    if (this.value < IR_DETECTION_THRESHOLD) {
+    if (value < IR_DETECTION_THRESHOLD) {
       console.log("DETECTED!");
     }
   });
