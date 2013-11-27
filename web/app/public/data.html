@@ -10,6 +10,8 @@
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
+<!-- JQUERY POWER -->
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 
     <!-- Add custom CSS here -->
     <link href="css/sb-admin.css" rel="stylesheet">
@@ -38,9 +40,9 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse navbar-ex1-collapse">
           <ul class="nav navbar-nav side-nav">
-            <li class="active"><a href="index.html"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li><a href="index.html"><i class="fa fa-dashboard"></i> Dashboard</a></li>
             <li><a href="graphs.html"><i class="fa fa-bar-chart-o"></i> Charts</a></li>
-            <li><a href="data.html"><i class="fa fa-table"></i> Data</a></li>
+            <li class="active"><a href="data.html"><i class="fa fa-table"></i> Data</a></li>
  <!--           <li><a href="forms.html"><i class="fa fa-edit"></i> Forms</a></li>
             <li><a href="typography.html"><i class="fa fa-font"></i> Typography</a></li>
             <li><a href="bootstrap-elements.html"><i class="fa fa-desktop"></i> Bootstrap Elements</a></li>
@@ -74,7 +76,7 @@
             </li>
            
             <li class="dropdown user-dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> John Smith <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Orlando <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li><a href="#"><i class="fa fa-user"></i> Profile</a></li>
                 <li><a href="#"><i class="fa fa-envelope"></i> Inbox</a></li>
@@ -91,9 +93,9 @@
 
         <div class="row">
           <div class="col-lg-12">
-            <h1>Dashboard <small>Overview</small></h1>
+            <h1>Data <small>Overview</small></h1>
             <ol class="breadcrumb">
-              <li class="active"><i class="fa fa-dashboard"></i> Dashboard</li>
+              <li class="active"><i class="fa fa-dashboard"></i> Data</li>
             </ol>
             <div class="alert alert-success alert-dismissable">
               <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -103,88 +105,77 @@
         </div><!-- /.row -->
 
         <div class="row">
-          <div class="col-lg-4">
-            <div class="panel panel-info">
-              <div class="panel-heading">
-                <div class="row">
-                  <div class="col-xs-6">
-                    <i class="fa fa-comments fa-5x"></i>
-                  </div>
-                  <div class="col-xs-6 text-right">
-                    <p class="announcement-heading">3</p>
-                    <p class="announcement-text">Live sensors</p>
-                  </div>
-                </div>
-              </div>
-              <a href="#">
-                <div class="panel-footer announcement-bottom">
-                  <div class="row">
-                    <div class="col-xs-6">
-                      View LIVE Sensors
-                    </div>
-                    <div class="col-xs-6 text-right">
-                      <i class="fa fa-arrow-circle-right"></i>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div>
+        <script>
+     
+    function myCall(dUrl) {
+        var request = $.ajax({
+            url: dUrl,
+            type: "GET",            
+            dataType: "html"
+        });
+ 
+        request.done(function(msg) {
+          obj = JSON.parse(msg);
+          var Lonlat = JSON.parse(obj.contentInstances[0].content.contentTypeBinary);
+   $("#box").html(Lonlat.Latitude);
+      $("#box2").html(Lonlat.Longitude);
 
-          <div class="col-lg-4">
-            <div class="panel panel-danger">
-              <div class="panel-heading">
-                <div class="row">
-                  <div class="col-xs-6">
-                    <i class="fa fa-tasks fa-5x"></i>
-                  </div>
-                  <div class="col-xs-6 text-right">
-                    <p class="announcement-heading">0</p>
-                    <p class="announcement-text">Broken sensors</p>
-                  </div>
-                </div>
-              </div>
-              <a href="#">
-                <div class="panel-footer announcement-bottom">
-                  <div class="row">
-                    <div class="col-xs-6">
-                      Locate broken sensors
-                    </div>
-                    <div class="col-xs-6 text-right">
-                      <i class="fa fa-arrow-circle-right"></i>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="panel panel-success">
-              <div class="panel-heading">
-                <div class="row">
-                  <div class="col-xs-6">
-                    <i class="fa fa-comments fa-5x"></i>
-                  </div>
-                  <div class="col-xs-6 text-right">
-                    <p class="announcement-heading">1</p>
-                    <p class="announcement-text">New Events!</p>
-                  </div>
-                </div>
-              </div>
-              <a href="#">
-                <div class="panel-footer announcement-bottom">
-                  <div class="row">
-                    <div class="col-xs-6">
-                    Check events
-                      </div>
-                    <div class="col-xs-6 text-right">
-                      <i class="fa fa-arrow-circle-right"></i>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-          </div>
+//Lonlat.Latitude and Lonlat.Longitude
+
+        });
+ 
+        request.fail(function(jqXHR, textStatus) {
+            alert( "Request failed: " + textStatus );
+        });
+    
+
+
+    }
+
+    function myOtherCall(dUrl) {
+        var request = $.ajax({
+            url: dUrl,
+            type: "GET",            
+            dataType: "html"
+        });
+ 
+        request.done(function(msg) {
+          var obj = JSON.parse(msg);
+          var sObj = obj.contentInstances.size;
+          for(var i = 0; i <= sObj; i++) {
+            console.log(obj.contentInstances[i].content.contentTypeBinary)
+          }
+
+          var Lonlat = JSON.parse(obj.contentInstances[0].content.contentTypeBinary);
+   $("#box").html(Lonlat.Latitude);
+      $("#box2").html(Lonlat.Longitude);
+
+//Lonlat.Latitude and Lonlat.Longitude
+
+        });
+ 
+        request.fail(function(jqXHR, textStatus) {
+            alert( "Request failed: " + textStatus );
+        });
+    
+
+
+    }
+
+
+
+
+
+
+</script>
+<button onclick="javascript:myCall('https://api.aercloud.aeris.com/v1/10976/scls/MyAlertsApp/containers/safehouse/contentInstances?apiKey=edffb534-5389-11e3-8385-25040389b344')">Get Safehouse</button>
+<br>
+<button onclick="javascript:myOtherCall('https://api.aercloud.aeris.com/v1/10976/scls/MyAlertsApp/containers/infections2/contentInstances?apiKey=edffb534-5389-11e3-8385-25040389b344')">Get Safehouse</button>
+<br>
+<span id="box">Result:</span>
+<br>
+<span id="box2">Result:</span>
+
         </div><!-- /.row -->
 
         
