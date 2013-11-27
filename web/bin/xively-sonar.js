@@ -3,7 +3,7 @@
 var API_BASE = "https://api.xively.com/";
 var API_KEY = "m4FrAG9u09PaF45HV7gurw0BTpxvFGIRtaqHVe0IcSVsxAcf";
 var FEED_ID = "1067059460";
-
+var DATASTREAM_ID = "sonar";
 
 var IR_DETECTION_THRESHOLD = 150;
 
@@ -14,9 +14,8 @@ var needle = require('needle');
 var five = require("johnny-five");
 var Sensor = require("./lib/Sensor");
 
-var datastreamId = "sonar";
 var xivelyAddDataUrl = API_BASE + "/v2/feeds/" + FEED_ID + ".json";
-var xivelyGetDataUrl = API_BASE + "/v2/feeds/" + FEED_ID + "/datastreams/" + datastreamId;
+var xivelyGetDataUrl = API_BASE + "/v2/feeds/" + FEED_ID + "/datastreams/" + DATASTREAM_ID;
 
 var headers = {
   "X-ApiKey": API_KEY
@@ -46,7 +45,33 @@ board.on("ready", function() {
     console.log("ir value:", value);
 
     if (value < IR_DETECTION_THRESHOLD) {
-      console.log("DETECTED!");
+      console.log("DETECTED: out");
+
+      needle.get(xivelyGetDataUrl, options, function(err, resp, body){
+        var currentVal = body["current_value"];
+        if (currentVal) {
+          var currentValNum = parseInt(currentVal, 10);
+
+          // Subtract value
+          var newVal = currentValNum - 1;
+
+          var data = {
+            "version":"1.0.0",
+            "datastreams" : [
+              {
+                "id" : DATASTREAM_ID,
+                "current_value": newVal
+              }
+            ]
+          };
+
+          console.log(currentVal, '->', newVal);
+
+          needle.put(xivelyAddDataUrl, data, options, function(err, resp, body) {
+            console.log("put:", data, resp.output);
+          });
+        }
+      });
     }
   });
 
@@ -66,7 +91,7 @@ board.on("ready", function() {
   //         "version":"1.0.0",
   //         "datastreams" : [
   //           {
-  //             "id" : datastreamId,
+  //             "id" : DATASTREAM_ID,
   //             "current_value": newVal
   //           }
   //         ]
