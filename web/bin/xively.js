@@ -12,6 +12,7 @@ var five = require("johnny-five");
 
 var datastreamId = "sonar";
 var xivelyAddDataUrl = API_BASE + "/v2/feeds/" + FEED_ID + ".json";
+var xivelyGetDataUrl = API_BASE + "/v2/feeds/" + FEED_ID + "/datastreams/" + datastreamId;
 
 var headers = {
   "X-ApiKey": API_KEY
@@ -34,26 +35,30 @@ board.on("ready", function() {
   var ping = new five.Ping(SONAR_PIN);
 
   ping.on("change", function(err, value) {
-    var detectionValue = 0;
+    console.log(value, this.cm + "cm away");
 
     if (this.cm < NO_DETECTION_THRESHOLD) {
-      detectionValue = 1;
+      needle.get(xivelyGetDataUrl, options, function(err, resp, body){
+        var currentVal = body["current_value"];
+        var currentValNum = parseInt(currentVal, 10);
+        var newVal = currentValNum + 1;
+
+        var data = {
+          "version":"1.0.0",
+          "datastreams" : [
+            {
+              "id" : datastreamId,
+              "current_value": newVal
+            }
+          ]
+        };
+
+        console.log(currentVal, '->', newVal);
+
+        needle.put(xivelyAddDataUrl, data, options, function(err, resp, body) {
+          console.log("put:", data, resp.output);
+        });
+      });
     }
-
-    var data = {
-      "version":"1.0.0",
-      "datastreams" : [
-        {
-          "id" : datastreamId,
-          "current_value": detectionValue
-        }
-      ]
-    };
-
-    console.log(value, this.cm + "cm away (" + detectionValue + ")");
-
-    needle.put(xivelyAddDataUrl, data, options, function(err, resp, body) {
-      console.log("put:", data, resp.output);
-    });
   });
 });
