@@ -41,37 +41,44 @@ board.on("ready", function() {
   // Create a new IR receiver hardware instance.
   var irReceiver = new Sensor("A1", board);
 
+  // Boolean to check if it is currently decrementing,
+  // so that there are not duplicate calls to the api
+  var isDecrementing = false;
+
   irReceiver.on("read", function(value) {
     console.log("ir value:", value);
 
-    if (value < IR_DETECTION_THRESHOLD) {
-      console.log("DETECTED: out");
+    if (!isDecrementing) {
+      if (value < IR_DETECTION_THRESHOLD) {
+        console.log("DETECTED: out");
+        isDecrementing = true;
+        needle.get(xivelyGetDataUrl, options, function(err, resp, body){
+          var currentVal = body["current_value"];
+          if (currentVal) {
+            var currentValNum = parseInt(currentVal, 10);
 
-      needle.get(xivelyGetDataUrl, options, function(err, resp, body){
-        var currentVal = body["current_value"];
-        if (currentVal) {
-          var currentValNum = parseInt(currentVal, 10);
+            // Subtract value
+            var newVal = currentValNum - 1;
 
-          // Subtract value
-          var newVal = currentValNum - 1;
+            var data = {
+              "version":"1.0.0",
+              "datastreams" : [
+                {
+                  "id" : DATASTREAM_ID,
+                  "current_value": newVal
+                }
+              ]
+            };
 
-          var data = {
-            "version":"1.0.0",
-            "datastreams" : [
-              {
-                "id" : DATASTREAM_ID,
-                "current_value": newVal
-              }
-            ]
-          };
+            console.log(currentVal, '->', newVal);
 
-          console.log(currentVal, '->', newVal);
-
-          needle.put(xivelyAddDataUrl, data, options, function(err, resp, body) {
-            console.log("put:", data, resp.output);
-          });
-        }
-      });
+            needle.put(xivelyAddDataUrl, data, options, function(err, resp, body) {
+              console.log("put:", data, resp.output);
+              isDecrementing = false;
+            });
+          }
+        });
+      }
     }
   });
 
