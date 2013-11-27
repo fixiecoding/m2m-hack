@@ -40,7 +40,7 @@
     // the Repl instance's context.
     // Allows direct command line access
     board.repl.inject({
-      microphone: this.sensor
+      mic: this.sensor
     });
   };
 
