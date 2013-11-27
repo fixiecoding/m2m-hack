@@ -90,7 +90,7 @@ board.on("ready", function() {
   ping.on("change", function(err, value) {
     if (this.cm < SONAR_NO_DETECTION_THRESHOLD &&
         this.cm > SONAR_NO_DETECTION_MIN) {
-      console.log(value, this.cm + "cm away");
+      console.log("DETECTED: in", value, this.cm + "cm away");
       needle.get(xivelyGetDataUrl, options, function(err, resp, body){
         var currentVal = body["current_value"];
         if (currentVal) {
