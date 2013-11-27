@@ -26,28 +26,18 @@ To run the site using a different livereload port (default is `35729`), use the 
 
 ## Hardware
 
-To enable the hardware features
+### Prerequisites
 
 1. Wire up the arduino. (TODO)
 2. Upload firmata sketch onto the arudino (Open the Arduino IDE, select: File > Examples > Firmata > StandardFirmata)
-3. Find your arduino port, and update the port in `bin/hardware-server.js` (some machines don't require it though):
 
-        five.Board({
-          port: "port name from"
-        });
+### Development
 
-4. Start the hardware server
+Run the files in `bin`.
 
-        node bin/hardware-server.js
+eg,
 
-### Demo files
-
-Files for testing functionality.
-
-Microphone
-
-    node bin/microphone.js
-
+    node bin/bee-counter.js
 
 ## Testing
 
