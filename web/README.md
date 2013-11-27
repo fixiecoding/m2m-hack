@@ -4,6 +4,10 @@ A website built using [generator-starttter](https://github.com/taktran/generator
 
 ## Development
 
+Install modules
+
+    npm install
+
 Start the server
 
     grunt
@@ -19,6 +23,22 @@ To run the site on another port, use the `port` flag eg,
 To run the site using a different livereload port (default is `35729`), use the `lrp` flag (prevents this error: `Fatal error: Port 35729 is already in use by another process.`) eg,
 
     grunt --lrp=35720
+
+## Hardware
+
+To enable the hardware features
+
+1. Wire up the arduino. (TODO)
+2. Upload firmata sketch onto the arudino (Open the Arduino IDE, select: File > Examples > Firmata > StandardFirmata)
+3. Find your arduino port, and update the port in `bin/hardware-server.js` (some machines don't require it though):
+
+        five.Board({
+          port: "port name from"
+        });
+
+4. Start the hardware server
+
+        node bin/hardware-server.js
 
 ## Testing
 
