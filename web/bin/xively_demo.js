@@ -1,8 +1,8 @@
 "use strict";
 
 var API_BASE = "https://api.xively.com/";
-var API_KEY = "m4FrAG9u09PaF45HV7gurw0BTpxvFGIRtaqHVe0IcSVsxAcf";
-var FEED_ID = "1067059460";
+var API_KEY = "wtGfQ1fsCxwawA3MQz8KNwzPseNAjzJCOyYC941MShUzq5ML";
+var FEED_ID = "614944872";
 
 var needle = require('needle');
 
@@ -34,6 +34,6 @@ needle.put(xivelyAddDataUrl, data, options, function(err, resp, body){
   console.log("put:", resp.output);
 
   needle.get(xivelyGetDataUrl, options, function(err, resp, body){
-    console.log(body);
+    console.log(body["current_value"]);
   });
 });
